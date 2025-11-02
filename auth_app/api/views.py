@@ -8,20 +8,42 @@ from auth_app.models import CustomUser
 
 
 class RegistrationView(APIView):
+    """
+    API endpoint for user registration (customer or business).
+    Expects: username, email, password, repeated_password, type
+    Returns: Auth token, username, email, user ID
+    Status codes:
+        201 - User successfully created
+        400 - Invalid request data
+        500 - Internal server error
+    """
+
     def post(self, request):
+        """
+        Handles user registration.
+        Validates input, creates a new user, and returns an authentication
+        token.
+        """
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
+            # Create user
             user = CustomUser.objects.create_user(
                 username=serializer.validated_data['username'],
                 email=serializer.validated_data['email'],
                 password=serializer.validated_data['password'],
                 user_type=serializer.validated_data['type']
             )
+
+            # Create auth token
             token, created = Token.objects.get_or_create(user=user)
+
+            # Success response
             return Response({
                 "token": token.key,
                 "username": user.username,
                 "email": user.email,
                 "user_id": user.id,
             }, status=status.HTTP_201_CREATED)
+
+        # Error response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
