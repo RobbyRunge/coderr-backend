@@ -41,7 +41,7 @@ class TestLoginAPI(APITestCase):
         self.assertEqual(response.data['username'], 'testuser')
         self.assertEqual(response.data['email'], 'testuser@example.com')
 
-    # test cases for invalid login (wrong password)
+    # Test cases for invalid login (wrong password)
     def test_login_invalid_credentials(self):
         """
         Test login failure with invalid credentials.
@@ -53,9 +53,9 @@ class TestLoginAPI(APITestCase):
         response = self.client.post(self.login_url, login_data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', response.data)
-        self.assertIn('Invalid credentials!', str(response.data['error']))
+        self.assertIn('Invalid credentials.', str(response.data['error']))
 
-    # test cases for missing fields (username or password)
+    # Test cases for missing fields (username or password)
     def test_login_missing_fields(self):
         """
         Test login failure with missing fields.
@@ -68,7 +68,7 @@ class TestLoginAPI(APITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('password', response.data)
 
-    # test cases for empty username field
+    # Test cases for empty username field
     def test_login_empty_username(self):
         """
         Test login failure with empty username.

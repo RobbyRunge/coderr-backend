@@ -72,13 +72,13 @@ class LoginSerializer(serializers.Serializer):
         # Validate username field
         if not username or username.strip() == '':
             raise serializers.ValidationError(
-                {'username': 'Username is required!'}
+                {'username': 'Username is required.'}
             )
 
         # Validate password field
         if not password or password.strip() == '':
             raise serializers.ValidationError(
-                {'password': 'Password is required!'}
+                {'password': 'Password is required.'}
             )
 
         # Check if user exists
@@ -86,13 +86,13 @@ class LoginSerializer(serializers.Serializer):
             user = CustomUser.objects.get(username=username)
         except CustomUser.DoesNotExist:
             raise serializers.ValidationError(
-                {'error': 'User does not exist!'}
+                {'error': 'User does not exist.'}
             )
 
         # Verify password
         if not user.check_password(password):
             raise serializers.ValidationError(
-                {'error': 'Invalid credentials!'}
+                {'error': 'Invalid credentials.'}
             )
 
         # Add user to validated data
