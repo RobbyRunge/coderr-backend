@@ -163,3 +163,9 @@ REST_FRAMEWORK = {
 # Custom user model
 
 AUTH_USER_MODEL = 'auth_app.CustomUser'
+
+
+# Media files
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
