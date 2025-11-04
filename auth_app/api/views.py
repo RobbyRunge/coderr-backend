@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 
-from .serializers import RegistrationSerializer
+from .serializers import RegistrationSerializer, LoginSerializer
 from auth_app.models import CustomUser
 
 
@@ -47,3 +47,42 @@ class RegistrationView(APIView):
 
         # Error response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    """
+    API endpoint for user login.
+    Expects: username, password
+    Returns: Auth token, fullname, email, user ID
+    Status codes:
+        200 - Login successful
+        400 - Invalid credentials
+    """
+
+    def post(self, request):
+        """
+        Handle user login request.
+
+        Validates credentials and returns authentication token.
+        """
+        serializer = LoginSerializer(data=request.data)
+        data = {}
+
+        if serializer.is_valid():
+            # Get authenticated user from validated data
+            user = serializer.validated_data['user']
+            # Get or create authentication token
+            token, created = Token.objects.get_or_create(user=user)
+            # Prepare response data
+            data = {
+                'token': token.key,
+                'username': user.username,
+                'email': user.email,
+                'user_id': user.id,
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )

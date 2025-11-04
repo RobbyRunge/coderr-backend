@@ -40,3 +40,61 @@ class RegistrationSerializer(serializers.Serializer):
         if CustomUser.objects.filter(email=data['email']).exists():
             raise serializers.ValidationError("Email already registered.")
         return data
+
+
+class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for user login.
+    Validates input fields.
+    Fields:
+        - username: required
+        - password: required
+    """
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, data):
+        """
+        Validate login credentials.
+        Checks:
+            - Username is not empty
+            - Password is not empty
+            - User exists with the given username
+            - Password matches the user's hashed password
+        Raises:
+            - ValidationError if credentials are invalid
+        Returns:
+            - data dict with added 'user' key containing User instance
+        """
+        username = data.get('username')
+        password = data.get('password')
+
+        # Validate username field
+        if not username or username.strip() == '':
+            raise serializers.ValidationError(
+                {'username': 'Username is required!'}
+            )
+
+        # Validate password field
+        if not password or password.strip() == '':
+            raise serializers.ValidationError(
+                {'password': 'Password is required!'}
+            )
+
+        # Check if user exists
+        try:
+            user = CustomUser.objects.get(username=username)
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError(
+                {'error': 'User does not exist!'}
+            )
+
+        # Verify password
+        if not user.check_password(password):
+            raise serializers.ValidationError(
+                {'error': 'Invalid credentials!'}
+            )
+
+        # Add user to validated data
+        data['user'] = user
+        return data
