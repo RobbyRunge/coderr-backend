@@ -24,6 +24,6 @@ urlpatterns = [
     # path('api/', include('base_info_app.api.urls')),
     # path('api/', include('offers_app.api.urls')),
     # path('api/', include('orders_app.api.urls')),
-    # path('api/', include('profiles_app.api.urls')),
+    path('api/', include('profiles_app.api.urls')),
     # path('api/', include('reviews_app.api.urls')),
 ]
