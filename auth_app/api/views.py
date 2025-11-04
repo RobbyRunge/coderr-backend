@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 
 from .serializers import RegistrationSerializer, LoginSerializer
 from auth_app.models import CustomUser
@@ -17,6 +18,7 @@ class RegistrationView(APIView):
         400 - Invalid request data
         500 - Internal server error
     """
+    permission_classes = [AllowAny]
 
     def post(self, request):
         """
@@ -58,6 +60,7 @@ class LoginView(APIView):
         200 - Login successful
         400 - Invalid credentials
     """
+    permission_classes = [AllowAny]
 
     def post(self, request):
         """
