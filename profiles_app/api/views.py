@@ -1,4 +1,4 @@
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from profiles_app.models import Profile
@@ -26,3 +26,12 @@ class ProfileDetailView(RetrieveUpdateAPIView):
                     "You are only allowed to edit your own profile."
                 )
         return obj
+
+
+class BusinessProfileListView(ListAPIView):
+    """
+    View to retrieve business profiles.
+    """
+    queryset = Profile.objects.filter(type="business")
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
