@@ -18,11 +18,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             'type', 'email', 'created_at'
         ]
 
+    # Ensure that certain fields are never null in the response
     def to_representation(self, instance):
-        """
-        Override the default representation to ensure that
-        specific fields are never null, but empty strings if unset.
-        """
         data = super().to_representation(instance)
         for field in [
             'first_name', 'last_name', 'location',
@@ -31,3 +28,14 @@ class ProfileSerializer(serializers.ModelSerializer):
             if data.get(field) is None:
                 data[field] = ''
         return data
+
+    # Ensure that certain fields are never null in the request
+    def validate(self, attrs):
+        for field in [
+            "first_name", "last_name",
+            "location", "tel",
+            "description", "working_hours"
+        ]:
+            if field in attrs and attrs[field] is None:
+                attrs[field] = ""
+        return attrs
