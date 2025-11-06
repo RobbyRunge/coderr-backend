@@ -38,6 +38,7 @@ class OfferListView(ListAPIView):
             except (TypeError, ValueError):
                 raise ValidationError(
                     {'creator_id': 'Must be an integer.'})
+            queryset = queryset.filter(user_id=creator_id)
         if min_price:
             try:
                 min_price = float(min_price)

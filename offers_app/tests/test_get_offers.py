@@ -159,3 +159,16 @@ class OfferListAPITest(APITestCase):
         self.assertIn('count', data)
         self.assertIn('results', data)
         self.assertIsInstance(data['results'], list)
+
+    # Test cases for offer response fields
+    def test_offer_response_fields(self):
+        url = '/api/offers/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        offer = data['results'][0]
+        self.assertIn('min_price', offer)
+        self.assertIn('min_delivery_time', offer)
+        self.assertIn('user_details', offer)
+        self.assertIn('details', offer)
+        self.assertIsInstance(offer['user_details'], dict)
