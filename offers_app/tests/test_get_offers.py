@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
+
 from rest_framework.test import APITestCase
+
+from offers_app.models import Offer
 
 
 class OfferListAPITest(APITestCase):
@@ -8,10 +11,37 @@ class OfferListAPITest(APITestCase):
     ordering, searching, and pagination.
     """
     def setUp(self):
+        # Create test users
         self.user = get_user_model().objects.create_user(
             username='testuser',
             password='testpass'
         )
+        self.user2 = get_user_model().objects.create_user(
+            username='anotheruser',
+            password='anotherpass'
+        )
+        # Create test offers
+        self.offer_a1 = Offer.objects.create(
+            user=self.user,
+            title="Offer A1",
+            description="Description for Offer A1",
+            price=100,
+            delivery_time=5
+        )
+        self.offer_a2 = Offer.objects.create(
+            user=self.user,
+            title="Offer A2",
+            description="Description for Offer A2",
+            price=200,
+            delivery_time=10
+        )
+        self.offer_b1 = Offer.objects.create(
+            user=self.user2,
+            title="Offer B1",
+            description="Description for Offer B1",
+            price=150,
+            delivery_time=7
+        ) 
 
     # Test cases for the /api/offers/ endpoint
     def test_offers_list_endpoint_reachable(self):
