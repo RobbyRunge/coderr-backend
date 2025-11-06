@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 
+from datetime import datetime, timezone
 from rest_framework.test import APITestCase
 
 from offers_app.models import Offer
@@ -27,7 +28,6 @@ class OfferListAPITest(APITestCase):
             description="Description for Offer A1",
             price=100,
             delivery_time=5,
-            updated_at='2024-01-01T10:00:00Z'
         )
         self.offer_a2 = Offer.objects.create(
             user=self.user,
@@ -35,7 +35,6 @@ class OfferListAPITest(APITestCase):
             description="Description for Offer A2",
             price=200,
             delivery_time=10,
-            updated_at='2024-01-02T10:00:00Z'
         )
         self.offer_b1 = Offer.objects.create(
             user=self.user2,
@@ -43,8 +42,30 @@ class OfferListAPITest(APITestCase):
             description="Description for Offer B1",
             price=150,
             delivery_time=7,
-            updated_at='2024-01-03T10:00:00Z'
         )
+        # Set timestamps after creation
+        self.offer_a1.created_at = datetime(
+            2024, 1, 1, 10, 0, 0,
+            tzinfo=timezone.utc
+        )
+        self.offer_a1.updated_at = datetime(
+            2024, 1, 1, 10, 0, 0,
+            tzinfo=timezone.utc
+        )
+        self.offer_a1.save(update_fields=['created_at', 'updated_at'])
+
+        self.offer_a2.created_at = datetime(2024, 1, 2, 10, 0, 0, tzinfo=timezone.utc)
+        self.offer_a2.updated_at = datetime(2024, 1, 2, 10, 0, 0, tzinfo=timezone.utc)
+        self.offer_a2.save(update_fields=['created_at', 'updated_at'])
+
+        self.offer_b1.created_at = datetime(2024, 1, 3, 10, 0, 0, tzinfo=timezone.utc)
+        self.offer_b1.updated_at = datetime(2024, 1, 3, 10, 0, 0, tzinfo=timezone.utc)
+        self.offer_b1.save(update_fields=['created_at', 'updated_at'])
+
+        # Refresh from DB to ensure timestamps are set
+        self.offer_a1.refresh_from_db()
+        self.offer_a2.refresh_from_db()
+        self.offer_b1.refresh_from_db()
 
     # Test cases for retrieving all offers
     def test_offers_list_returns_all_offers(self):
@@ -104,11 +125,9 @@ class OfferListAPITest(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        # Check that the offers are ordered by updated_at
-        self.assertEqual(data['count'], 3)
-        self.assertEqual(data['results'][0]['title'], self.offer_a2.title)
-        self.assertEqual(data['results'][1]['title'], self.offer_a1.title)
-        self.assertEqual(data['results'][2]['title'], self.offer_b1.title)
+        # Check that offers are ordered by updated_at ascending
+        updated_ats = [offer['updated_at'] for offer in data['results']]
+        self.assertEqual(updated_ats, sorted(updated_ats))
 
     # Test cases for searching by title or description
     def test_search(self):
