@@ -33,12 +33,17 @@ class OfferListView(ListAPIView):
         max_delivery_time = self.request.query_params.get('max_delivery_time')
 
         if creator_id:
-            queryset = queryset.filter(user_id=creator_id)
+            try:
+                creator_id = int(creator_id)
+            except (TypeError, ValueError):
+                raise ValidationError(
+                    {'creator_id': 'Must be an integer.'})
         if min_price:
             try:
                 min_price = float(min_price)
             except (TypeError, ValueError):
-                raise ValidationError({'min_price': 'Must be a number.'})
+                raise ValidationError(
+                    {'min_price': 'Must be a number.'})
             queryset = queryset.filter(price__gte=min_price)
         if max_delivery_time:
             try:
