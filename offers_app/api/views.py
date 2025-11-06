@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework import filters
+from rest_framework.exceptions import ValidationError
 
 from offers_app.models import Offer
 from offers_app.api.serializers import OfferSerializer
@@ -34,7 +35,16 @@ class OfferListView(ListAPIView):
         if creator_id:
             queryset = queryset.filter(user_id=creator_id)
         if min_price:
+            try:
+                min_price = float(min_price)
+            except (TypeError, ValueError):
+                raise ValidationError({'min_price': 'Must be a number.'})
             queryset = queryset.filter(price__gte=min_price)
         if max_delivery_time:
+            try:
+                max_delivery_time = int(max_delivery_time)
+            except (TypeError, ValueError):
+                raise ValidationError(
+                    {'max_delivery_time': 'Must be an integer.'})
             queryset = queryset.filter(delivery_time__lte=max_delivery_time)
         return queryset
