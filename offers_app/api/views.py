@@ -1,19 +1,20 @@
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework import filters
 from rest_framework.exceptions import ValidationError
 
+from offers_app.api.permissions import IsBusinessUser
 from offers_app.models import Offer
 from offers_app.api.serializers import OfferSerializer
 from offers_app.api.paginations import DynamicPageSizePagination
 
 
-class OfferListView(ListAPIView):
+class OfferListView(ListCreateAPIView):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, IsBusinessUser]
     pagination_class = DynamicPageSizePagination
     filter_backends = [
         DjangoFilterBackend,

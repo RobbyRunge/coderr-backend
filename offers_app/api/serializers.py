@@ -1,35 +1,31 @@
 from rest_framework import serializers
 
-from offers_app.models import Offer
+from offers_app.models import Offer, OfferDetail
+
+
+class OfferDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OfferDetail
+        fields = [
+            'id', 'title', 'revisions', 'delivery_time_in_days',
+            'price', 'features', 'offer_type'
+        ]
 
 
 class OfferSerializer(serializers.ModelSerializer):
-    min_price = serializers.SerializerMethodField()
-    min_delivery_time = serializers.SerializerMethodField()
-    user_details = serializers.SerializerMethodField()
-    details = serializers.SerializerMethodField()
+    details = OfferDetailSerializer(many=True)
 
     class Meta:
         model = Offer
         fields = [
-            'id', 'title', 'description',
-            'price', 'created_at', 'updated_at',
-            'min_price', 'min_delivery_time', 'user_details',
+            'id', 'title', 'image', 'description',
             'details'
         ]
 
-    def get_min_price(self, obj):
-        return obj.price
-
-    def get_min_delivery_time(self, obj):
-        return obj.delivery_time
-
-    def get_user_details(self, obj):
-        return {
-            "first_name": getattr(obj.user, "first_name", ""),
-            "last_name": getattr(obj.user, "last_name", ""),
-            "username": getattr(obj.user, "username", ""),
-        }
-
-    def get_details(self, obj):
-        return f"{obj.title} - {obj.description}"
+    def create(self, validated_data):
+        details_data = validated_data.pop('details')
+        user = self.context['request'].user
+        offer = Offer.objects.create(user=user, **validated_data)
+        for detail_data in details_data:
+            OfferDetail.objects.create(offer=offer, **detail_data)
+        return offer
