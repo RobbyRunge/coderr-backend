@@ -15,7 +15,7 @@ class Offer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = []
+        ordering = ['id']
 
     def __str__(self):
         return self.title

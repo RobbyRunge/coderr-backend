@@ -3,14 +3,10 @@ from django.contrib.auth import get_user_model
 from datetime import datetime, timezone
 from rest_framework.test import APITestCase
 
-from offers_app.models import Offer
+from offers_app.models import Offer, OfferDetail
 
 
 class OfferListAPITest(APITestCase):
-    """
-    Tests for the Offer List API endpoint with filtering,
-    ordering, searching, and pagination.
-    """
     def setUp(self):
         # Create test users
         self.user = get_user_model().objects.create_user(
@@ -21,27 +17,49 @@ class OfferListAPITest(APITestCase):
             username='anotheruser',
             password='anotherpass'
         )
-        # Create test offers
+        # Create test offers (ohne price und delivery_time)
         self.offer_a1 = Offer.objects.create(
             user=self.user,
             title="Offer A1",
             description="Description for Offer A1",
-            price=100,
-            delivery_time=5,
         )
         self.offer_a2 = Offer.objects.create(
             user=self.user,
             title="Offer A2",
             description="Description for Offer A2",
-            price=200,
-            delivery_time=10,
         )
         self.offer_b1 = Offer.objects.create(
             user=self.user2,
             title="Offer B1",
             description="Description for Offer B1",
+        )
+        # Create OfferDetails für jedes Angebot
+        OfferDetail.objects.create(
+            offer=self.offer_a1,
+            title="Detail A1",
+            revisions=1,
+            delivery_time_in_days=5,
+            price=100,
+            features=[],
+            offer_type="basic"
+        )
+        OfferDetail.objects.create(
+            offer=self.offer_a2,
+            title="Detail A2",
+            revisions=2,
+            delivery_time_in_days=10,
+            price=200,
+            features=[],
+            offer_type="standard"
+        )
+        OfferDetail.objects.create(
+            offer=self.offer_b1,
+            title="Detail B1",
+            revisions=1,
+            delivery_time_in_days=7,
             price=150,
-            delivery_time=7,
+            features=[],
+            offer_type="basic"
         )
         # Set timestamps after creation
         self.offer_a1.created_at = datetime(

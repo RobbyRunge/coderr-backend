@@ -51,24 +51,25 @@ class OfferListView(ListCreateAPIView):
             try:
                 creator_id = int(creator_id)
             except (TypeError, ValueError):
-                raise ValidationError(
-                    {'creator_id': 'Must be an integer.'})
+                raise ValidationError({'creator_id': 'Must be an integer.'})
             queryset = queryset.filter(user_id=creator_id)
         if min_price:
             try:
                 min_price = float(min_price)
             except (TypeError, ValueError):
-                raise ValidationError(
-                    {'min_price': 'Must be a number.'})
-            queryset = queryset.filter(price__gte=min_price)
+                raise ValidationError({'min_price': 'Must be a number.'})
+            queryset = queryset.filter(details__price__gte=min_price)
         if max_delivery_time:
             try:
                 max_delivery_time = int(max_delivery_time)
             except (TypeError, ValueError):
                 raise ValidationError(
-                    {'max_delivery_time': 'Must be an integer.'})
-            queryset = queryset.filter(delivery_time__lte=max_delivery_time)
-        return queryset
+                    {'max_delivery_time': 'Must be an integer.'}
+                )
+            queryset = queryset.filter(
+                details__delivery_time_in_days__lte=max_delivery_time
+            )
+        return queryset.distinct()
 
 
 class OfferDetailView(RetrieveAPIView):
