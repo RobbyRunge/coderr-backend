@@ -12,6 +12,9 @@ from offers_app.api.paginations import DynamicPageSizePagination
 
 
 class OfferListView(ListCreateAPIView):
+    """
+    API view to list and create offers.
+    """
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
     permission_classes = [AllowAny, IsBusinessUser]
@@ -27,11 +30,13 @@ class OfferListView(ListCreateAPIView):
         'delivery_time', 'created_at',
         'updated_at']
 
+    # Determine the serializer class based on the request method
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return OfferCreateSerializer
         return OfferSerializer
 
+    # Apply filtering based on query parameters
     def get_queryset(self):
         queryset = super().get_queryset()
         creator_id = self.request.query_params.get('creator_id')

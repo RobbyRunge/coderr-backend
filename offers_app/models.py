@@ -4,6 +4,9 @@ from core import settings
 
 
 class Offer(models.Model):
+    """
+    Model representing an offer made by a user.
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     image = models.ImageField(null=True, blank=True)
@@ -19,6 +22,9 @@ class Offer(models.Model):
 
 
 class OfferDetail(models.Model):
+    """
+    Model representing detailed information about an offer.
+    """
     offer = models.ForeignKey(Offer, related_name='details', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     revisions = models.IntegerField()

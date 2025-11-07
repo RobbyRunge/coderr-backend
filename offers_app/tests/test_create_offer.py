@@ -5,6 +5,9 @@ from rest_framework.test import APIClient
 
 
 class OfferCreateTests(TestCase):
+    """
+    Test cases for creating offers via the API.
+    """
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
@@ -13,12 +16,14 @@ class OfferCreateTests(TestCase):
             user_type='business'
         )
 
+    # Test cases creating an offer with valid details
     def test_create_offer_with_details(self):
         self.client.force_authenticate(user=self.user)
         offer_data = {
             "title": "Grafikdesign-Paket",
             "image": None,
-            "description": "Ein umfassendes Grafikdesign-Paket für Unternehmen.",
+            "description":
+                "Ein umfassendes Grafikdesign-Paket für Unternehmen.",
             "details": [
                 {
                     "title": "Basic Design",
@@ -73,6 +78,7 @@ class OfferCreateTests(TestCase):
             self.assertIn('features', detail)
             self.assertIn('offer_type', detail)
 
+    # Test cases creating an offer with fewer than three details
     def test_create_offer_with_too_few_details(self):
         self.client.force_authenticate(user=self.user)
         offer_data = {
@@ -93,6 +99,7 @@ class OfferCreateTests(TestCase):
         response = self.client.post('/api/offers/', offer_data, format='json')
         self.assertEqual(response.status_code, 400)
 
+    # Test cases creating an offer as a non-business user
     def test_create_offer_as_non_business_user(self):
         customer = get_user_model().objects.create_user(
             username='customer',
@@ -134,6 +141,7 @@ class OfferCreateTests(TestCase):
         response = self.client.post('/api/offers/', offer_data, format='json')
         self.assertEqual(response.status_code, 403)
 
+    # Test cases creating an offer without authentication
     def test_create_offer_unauthenticated(self):
         offer_data = {
             "title": "Testangebot",
@@ -169,6 +177,7 @@ class OfferCreateTests(TestCase):
         response = self.client.post('/api/offers/', offer_data, format='json')
         self.assertEqual(response.status_code, 401)
 
+    # Test cases creating an offer with missing title
     def test_create_offer_missing_title(self):
         self.client.force_authenticate(user=self.user)
         offer_data = {

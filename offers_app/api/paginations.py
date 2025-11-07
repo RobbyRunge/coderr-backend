@@ -8,4 +8,4 @@ class DynamicPageSizePagination(PageNumberPagination):
     """
     page_size = 1  # should orientate on frontend needs
     page_size_query_param = 'page_size'
-    max_page_size = 1000
+    max_page_size = 10
