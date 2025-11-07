@@ -3,17 +3,24 @@ from offers_app.models import Offer, OfferDetail
 
 
 class OfferDetailShortSerializer(serializers.ModelSerializer):
+    """
+    Serializer for offer detail representation in the offer list.
+    """
     url = serializers.SerializerMethodField()
 
     class Meta:
         model = OfferDetail
         fields = ['id', 'url']
 
+    # Get the URL for the offer detail
     def get_url(self, obj):
         return f"/offerdetails/{obj.id}/"
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating and representing offer details.
+    """
     class Meta:
         model = OfferDetail
         fields = [
@@ -23,6 +30,9 @@ class OfferDetailSerializer(serializers.ModelSerializer):
 
 
 class OfferSerializer(serializers.ModelSerializer):
+    """
+    Serializer for representing offers with summary information.
+    """
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     details = OfferDetailShortSerializer(many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
@@ -37,16 +47,26 @@ class OfferSerializer(serializers.ModelSerializer):
             'min_price', 'min_delivery_time', 'user_details'
         ]
 
+    # Get the minimum price from the offer details
     def get_min_price(self, obj):
         prices = [detail.price for detail in obj.details.all()]
         return min(prices) if prices else None
 
+    # Get the minimum delivery time from the offer details
     def get_min_delivery_time(self, obj):
         times = [detail.delivery_time_in_days for detail in obj.details.all()]
         return min(times) if times else None
 
+    # Get user details associated with the offer
     def get_user_details(self, obj):
         user = obj.user
+        profile = getattr(user, 'profile', None)
+        if profile:
+            return {
+                "first_name": profile.first_name,
+                "last_name": profile.last_name,
+                "username": user.username
+            }
         return {
             "first_name": user.first_name,
             "last_name": user.last_name,
