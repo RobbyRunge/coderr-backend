@@ -59,7 +59,6 @@ class OfferCreateTests(TestCase):
             ]
         }
         response = self.client.post('/api/offers/', offer_data, format='json')
-        print(response.json())
         self.assertEqual(response.status_code, 201)
         data = response.json()
         self.assertIn('id', data)
