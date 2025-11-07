@@ -72,3 +72,134 @@ class OfferCreateTests(TestCase):
             self.assertIn('price', detail)
             self.assertIn('features', detail)
             self.assertIn('offer_type', detail)
+
+    def test_create_offer_with_too_few_details(self):
+        self.client.force_authenticate(user=self.user)
+        offer_data = {
+            "title": "Testangebot",
+            "image": None,
+            "description": "Zu wenige Details",
+            "details": [
+                {
+                    "title": "Nur eins",
+                    "revisions": 1,
+                    "delivery_time_in_days": 1,
+                    "price": 10,
+                    "features": ["Feature"],
+                    "offer_type": "basic"
+                }
+            ]
+        }
+        response = self.client.post('/api/offers/', offer_data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_offer_as_non_business_user(self):
+        customer = get_user_model().objects.create_user(
+            username='customer',
+            password='testpass',
+            user_type='customer'
+        )
+        self.client.force_authenticate(user=customer)
+        offer_data = {
+            "title": "Testangebot",
+            "image": None,
+            "description": "Nur für Business",
+            "details": [
+                {
+                    "title": "Basic",
+                    "revisions": 1,
+                    "delivery_time_in_days": 1,
+                    "price": 10,
+                    "features": ["Feature"],
+                    "offer_type": "basic"
+                },
+                {
+                    "title": "Standard",
+                    "revisions": 2,
+                    "delivery_time_in_days": 2,
+                    "price": 20,
+                    "features": ["Feature"],
+                    "offer_type": "standard"
+                },
+                {
+                    "title": "Premium",
+                    "revisions": 3,
+                    "delivery_time_in_days": 3,
+                    "price": 30,
+                    "features": ["Feature"],
+                    "offer_type": "premium"
+                }
+            ]
+        }
+        response = self.client.post('/api/offers/', offer_data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+    def test_create_offer_unauthenticated(self):
+        offer_data = {
+            "title": "Testangebot",
+            "image": None,
+            "description": "Nicht eingeloggt",
+            "details": [
+                {
+                    "title": "Basic",
+                    "revisions": 1,
+                    "delivery_time_in_days": 1,
+                    "price": 10,
+                    "features": ["Feature"],
+                    "offer_type": "basic"
+                },
+                {
+                    "title": "Standard",
+                    "revisions": 2,
+                    "delivery_time_in_days": 2,
+                    "price": 20,
+                    "features": ["Feature"],
+                    "offer_type": "standard"
+                },
+                {
+                    "title": "Premium",
+                    "revisions": 3,
+                    "delivery_time_in_days": 3,
+                    "price": 30,
+                    "features": ["Feature"],
+                    "offer_type": "premium"
+                }
+            ]
+        }
+        response = self.client.post('/api/offers/', offer_data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_create_offer_missing_title(self):
+        self.client.force_authenticate(user=self.user)
+        offer_data = {
+            "image": None,
+            "description": "Kein Titel",
+            "details": [
+                {
+                    "title": "Basic",
+                    "revisions": 1,
+                    "delivery_time_in_days": 1,
+                    "price": 10,
+                    "features": ["Feature"],
+                    "offer_type": "basic"
+                },
+                {
+                    "title": "Standard",
+                    "revisions": 2,
+                    "delivery_time_in_days": 2,
+                    "price": 20,
+                    "features": ["Feature"],
+                    "offer_type": "standard"
+                },
+                {
+                    "title": "Premium",
+                    "revisions": 3,
+                    "delivery_time_in_days": 3,
+                    "price": 30,
+                    "features": ["Feature"],
+                    "offer_type": "premium"
+                }
+            ]
+        }
+        response = self.client.post('/api/offers/', offer_data, format='json')
+        self.assertEqual(response.status_code, 400)

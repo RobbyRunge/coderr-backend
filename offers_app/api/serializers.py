@@ -63,6 +63,12 @@ class OfferCreateSerializer(serializers.ModelSerializer):
             'id', 'title', 'image', 'description', 'details'
         ]
 
+    def validate_details(self, value):
+        if len(value) < 3:
+            raise serializers.ValidationError(
+                "An offer must have at least three details.")
+        return value
+
     def create(self, validated_data):
         details_data = validated_data.pop('details')
         user = self.context['request'].user

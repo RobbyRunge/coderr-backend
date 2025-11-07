@@ -26,7 +26,7 @@ class OfferListView(ListCreateAPIView):
         'id', 'price',
         'delivery_time', 'created_at',
         'updated_at']
-    
+
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return OfferCreateSerializer
