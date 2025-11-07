@@ -9,8 +9,8 @@ from offers_app.api.permissions import IsBusinessUser
 from offers_app.models import Offer
 from offers_app.api.serializers import (
     OfferCreateSerializer,
-    OfferSerializer,
-    OfferDetailResponseSerializer
+    OfferListSerializer,
+    OfferRetrieveSerializer
 )
 from offers_app.api.paginations import DynamicPageSizePagination
 
@@ -20,7 +20,7 @@ class OfferListView(ListCreateAPIView):
     API view to list and create offers.
     """
     queryset = Offer.objects.all()
-    serializer_class = OfferSerializer
+    serializer_class = OfferListSerializer
     permission_classes = [AllowAny, IsBusinessUser]
     pagination_class = DynamicPageSizePagination
     filter_backends = [
@@ -38,7 +38,7 @@ class OfferListView(ListCreateAPIView):
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return OfferCreateSerializer
-        return OfferSerializer
+        return OfferListSerializer
 
     # Apply filtering based on query parameters
     def get_queryset(self):
@@ -76,5 +76,5 @@ class OfferDetailView(RetrieveAPIView):
     API view to retrieve a specific offer by its ID.
     """
     queryset = Offer.objects.all()
-    serializer_class = OfferDetailResponseSerializer
+    serializer_class = OfferRetrieveSerializer
     permission_classes = [IsAuthenticated]

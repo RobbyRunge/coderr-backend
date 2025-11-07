@@ -2,7 +2,7 @@ from rest_framework import serializers
 from offers_app.models import Offer, OfferDetail
 
 
-class OfferDetailShortSerializer(serializers.ModelSerializer):
+class OfferDetailLinkSerializer(serializers.ModelSerializer):
     """
     Serializer for offer detail representation in the offer list.
     """
@@ -20,7 +20,7 @@ class OfferDetailShortSerializer(serializers.ModelSerializer):
         return f'/api/offerdetails/{obj.id}/'
 
 
-class OfferDetailSerializer(serializers.ModelSerializer):
+class OfferDetailFullSerializer(serializers.ModelSerializer):
     """
     Serializer for creating and representing offer details.
     """
@@ -32,12 +32,12 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class OfferDetailResponseSerializer(serializers.ModelSerializer):
+class OfferRetrieveSerializer(serializers.ModelSerializer):
     """
     Serializer for representing offers with summary information.
     """
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    details = OfferDetailShortSerializer(many=True, read_only=True)
+    details = OfferDetailLinkSerializer(many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
     min_delivery_time = serializers.SerializerMethodField()
 
@@ -76,12 +76,12 @@ class OfferDetailResponseSerializer(serializers.ModelSerializer):
         }
 
 
-class OfferSerializer(serializers.ModelSerializer):
+class OfferListSerializer(serializers.ModelSerializer):
     """
     Serializer for representing offers with summary information.
     """
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    details = OfferDetailShortSerializer(many=True, read_only=True)
+    details = OfferDetailLinkSerializer(many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
     min_delivery_time = serializers.SerializerMethodField()
     user_details = serializers.SerializerMethodField()
@@ -122,7 +122,7 @@ class OfferSerializer(serializers.ModelSerializer):
 
 
 class OfferCreateSerializer(serializers.ModelSerializer):
-    details = OfferDetailSerializer(many=True)
+    details = OfferDetailFullSerializer(many=True)
 
     class Meta:
         model = Offer
