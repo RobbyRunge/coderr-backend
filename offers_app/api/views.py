@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 
 from offers_app.api.permissions import IsBusinessUser
 from offers_app.models import Offer
-from offers_app.api.serializers import OfferSerializer
+from offers_app.api.serializers import OfferCreateSerializer, OfferSerializer
 from offers_app.api.paginations import DynamicPageSizePagination
 
 
@@ -26,6 +26,11 @@ class OfferListView(ListCreateAPIView):
         'id', 'price',
         'delivery_time', 'created_at',
         'updated_at']
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return OfferCreateSerializer
+        return OfferSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()
