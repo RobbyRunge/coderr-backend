@@ -1,16 +1,17 @@
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.generics import ListCreateAPIView, RetrieveAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import filters
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 
 from offers_app.api.permissions import IsBusinessUser
 from offers_app.models import Offer
 from offers_app.api.serializers import (
     OfferCreateSerializer,
     OfferListSerializer,
-    OfferRetrieveSerializer
+    OfferRetrieveSerializer,
+    OfferUpdateSerializer
 )
 from offers_app.api.paginations import DynamicPageSizePagination
 
@@ -72,10 +73,25 @@ class OfferListView(ListCreateAPIView):
         return queryset.distinct()
 
 
-class OfferDetailView(RetrieveAPIView):
+class OfferDetailView(RetrieveUpdateAPIView):
     """
-    API view to retrieve a specific offer by its ID.
+    API view to retrieve and update an offer.
     """
     queryset = Offer.objects.all()
-    serializer_class = OfferRetrieveSerializer
+    serializer_class = OfferUpdateSerializer
     permission_classes = [IsAuthenticated]
+
+    # Determine the serializer class based on the request method
+    def get_serializer_class(self):
+        if self.request.method in ['PATCH', 'PUT']:
+            return OfferUpdateSerializer
+        return OfferRetrieveSerializer
+
+    # Ensure only the owner can update the offer
+    def update(self, request, *args, **kwargs):
+        offer = self.get_object()
+        if offer.user != request.user:
+            raise PermissionDenied(
+                "You do not have permission to edit this offer."
+            )
+        return super().update(request, *args, **kwargs)

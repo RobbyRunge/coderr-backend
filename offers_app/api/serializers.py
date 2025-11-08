@@ -24,6 +24,8 @@ class OfferDetailFullSerializer(serializers.ModelSerializer):
     """
     Serializer for creating and representing offer details.
     """
+    id = serializers.IntegerField(required=False)
+
     class Meta:
         model = OfferDetail
         fields = [
@@ -145,3 +147,49 @@ class OfferCreateSerializer(serializers.ModelSerializer):
         for detail_data in details_data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
+
+
+class OfferUpdateSerializer(serializers.ModelSerializer):
+    details = OfferDetailFullSerializer(many=True, required=False)
+
+    class Meta:
+        model = Offer
+        fields = [
+            'id', 'title', 'image', 'description', 'details'
+        ]
+
+    # Update an offer and its details
+    def update(self, instance, validated_data):
+        # Update offer fields
+        for attr, value in validated_data.items():
+            if attr != 'details':
+                setattr(instance, attr, value)
+        instance.save()
+        # Update offer details
+        details_data = validated_data.get('details')
+        if details_data:
+            for detail_data in details_data:
+                offer_type = detail_data.get('offer_type')
+                if not offer_type:
+                    raise serializers.ValidationError(
+                        "Each detail must contain 'offer_type'."
+                    )
+                try:
+                    detail_instance = instance.details.get(
+                        offer_type=offer_type
+                    )
+                except OfferDetail.DoesNotExist:
+                    raise serializers.ValidationError(
+                        f"Detail with offer_type {offer_type} does not exist."
+                    )
+                # Only update fields provided in the request
+                for key, value in detail_data.items():
+                    if key != 'offer_type':
+                        setattr(detail_instance, key, value)
+                detail_instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['details'] = OfferDetailFullSerializer(instance.details.all(), many=True).data
+        return data
