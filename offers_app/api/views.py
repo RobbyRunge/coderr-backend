@@ -1,14 +1,19 @@
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    RetrieveAPIView
+)
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import filters
 from rest_framework.exceptions import ValidationError, PermissionDenied
 
 from offers_app.api.permissions import IsBusinessUser
-from offers_app.models import Offer
+from offers_app.models import Offer, OfferDetail
 from offers_app.api.serializers import (
     OfferCreateSerializer,
+    OfferDetailFullSerializer,
     OfferListSerializer,
     OfferRetrieveSerializer,
     OfferUpdateSerializer
@@ -95,7 +100,7 @@ class OfferDetailView(RetrieveUpdateDestroyAPIView):
                 "You do not have permission to edit this offer."
             )
         return super().update(request, *args, **kwargs)
-    
+
     # Ensure only the owner can delete the offer
     def destroy(self, request, *args, **kwargs):
         offer = self.get_object()
@@ -104,3 +109,12 @@ class OfferDetailView(RetrieveUpdateDestroyAPIView):
                 "You do not have permission to delete this offer."
             )
         return super().destroy(request, *args, **kwargs)
+
+
+class OfferDetailFullRetrieveView(RetrieveAPIView):
+    """
+    API view to retrieve a specific offer detail.
+    """
+    queryset = OfferDetail.objects.all()
+    serializer_class = OfferDetailFullSerializer
+    permission_classes = [IsAuthenticated]
