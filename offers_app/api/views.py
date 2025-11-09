@@ -1,6 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import filters
 from rest_framework.exceptions import ValidationError, PermissionDenied
@@ -73,7 +73,7 @@ class OfferListView(ListCreateAPIView):
         return queryset.distinct()
 
 
-class OfferDetailView(RetrieveUpdateAPIView):
+class OfferDetailView(RetrieveUpdateDestroyAPIView):
     """
     API view to retrieve and update an offer.
     """
@@ -95,3 +95,12 @@ class OfferDetailView(RetrieveUpdateAPIView):
                 "You do not have permission to edit this offer."
             )
         return super().update(request, *args, **kwargs)
+    
+    # Ensure only the owner can delete the offer
+    def destroy(self, request, *args, **kwargs):
+        offer = self.get_object()
+        if offer.user != request.user:
+            raise PermissionDenied(
+                "You do not have permission to delete this offer."
+            )
+        return super().destroy(request, *args, **kwargs)
