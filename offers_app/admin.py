@@ -15,4 +15,4 @@ class OfferDetailAdmin(admin.ModelAdmin):
     """
     Admin view for managing offer details.
     """
-    list_display = ('title', 'offer', 'price', 'delivery_time_in_days', 'id')
+    list_display = ('title', 'id', 'offer', 'price', 'delivery_time_in_days', )
