@@ -12,9 +12,9 @@ class Order(models.Model):
     revisions = models.IntegerField()
     delivery_time_in_days = models.IntegerField()
     price = models.IntegerField()
-    features = models.JSONField()
-    offer_type = models.CharField(max_length=50)
-    status = models.CharField(max_length=50)
+    features = models.JSONField(default=list)
+    offer_type = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, default='in_progress')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
