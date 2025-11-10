@@ -22,15 +22,17 @@ class CustomerProfileListViewTests(APITestCase):
     def test_get_customer_profiles(self):
         response = self.client.get('/api/profiles/customer/')
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        for profile in response.data:
+        self.assertIn('results', response.data)
+        self.assertIsInstance(response.data['results'], list)
+        for profile in response.data['results']:
             self.assertEqual(profile['type'], 'customer')
 
     # Test that certain fields are never null in the response
     def test_fields_never_null(self):
         response = self.client.get('/api/profiles/customer/')
         self.assertEqual(response.status_code, 200)
-        for profile in response.data:
+        self.assertIn('results', response.data)
+        for profile in response.data['results']:
             for field in [
                 'first_name', 'last_name', 'location',
                 'tel', 'description', 'working_hours'
