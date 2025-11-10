@@ -32,7 +32,7 @@ class BusinessProfileListView(ListAPIView):
     """
     View to retrieve business profiles.
     """
-    queryset = Profile.objects.filter(type="business")
+    queryset = Profile.objects.filter(type="business").order_by('id')
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
@@ -41,6 +41,6 @@ class CustomerProfileListView(ListAPIView):
     """
     View to retrieve customer profiles.
     """
-    queryset = Profile.objects.filter(type="customer")
+    queryset = Profile.objects.filter(type="customer").order_by('id')
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
