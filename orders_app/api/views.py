@@ -15,7 +15,6 @@ class OrderListCreateView(generics.ListCreateAPIView):
     View to list all orders for a user and create new orders.
     """
     permission_classes = [IsAuthenticated]
-
     serializer_class = OrderSerializer
 
     def get_queryset(self):
