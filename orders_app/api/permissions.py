@@ -16,3 +16,11 @@ class IsCustomerUser(BasePermission):
     def has_permission(self, request, view):
         profile = getattr(request.user, 'profile', None)
         return profile and getattr(profile, 'type', None) == 'customer'
+
+
+class IsAdminUser(BasePermission):
+    """
+    Permission: Only admin (staff) users can delete orders.
+    """
+    def has_permission(self, request, view):
+        return request.user and request.user.is_staff

@@ -4,7 +4,11 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from orders_app.api.permissions import IsBusinessUserOfOrder, IsCustomerUser
+from orders_app.api.permissions import (
+    IsAdminUser,
+    IsBusinessUserOfOrder,
+    IsCustomerUser
+)
 from orders_app.models import Order
 from orders_app.api.serializers import OrderSerializer
 from offers_app.models import OfferDetail
@@ -66,13 +70,19 @@ class OrderListCreateView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class OrderStatusUpdateView(generics.UpdateAPIView):
+class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     View to update the status of an existing order.
     """
-    permission_classes = [IsAuthenticated, IsBusinessUserOfOrder]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
+
+    def get_permissions(self):
+        if self.request.method == 'PATCH':
+            return [IsAuthenticated(), IsBusinessUserOfOrder()]
+        elif self.request.method == 'DELETE':
+            return [IsAuthenticated(), IsAdminUser()]
+        return [IsAuthenticated()]
 
     def patch(self, request, *args, **kwargs):
         order = self.get_object()
@@ -86,3 +96,8 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
         order.save()
         serializer = self.get_serializer(order)
         return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        order = self.get_object()
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
