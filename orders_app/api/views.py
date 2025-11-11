@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.contrib.auth import get_user_model
 
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -101,3 +102,34 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
         order = self.get_object()
         order.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class OrderCountView(generics.RetrieveAPIView):
+    """
+    View to get the count of 'in_progress' orders for a specific business user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk, *args, **kwargs):
+        User = get_user_model()
+        try:
+            business_user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(
+                {'detail': 'No business user found with the given ID.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        profile = getattr(business_user, 'profile', None)
+        if not profile or getattr(profile, 'type', None) != 'business':
+            return Response(
+                {'detail': 'User is not a business user.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        order_count = Order.objects.filter(
+            business_user=business_user,
+            status='in_progress'
+        ).count()
+        return Response(
+            {'order_count': order_count},
+            status=status.HTTP_200_OK
+        )
