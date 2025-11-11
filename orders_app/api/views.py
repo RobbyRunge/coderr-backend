@@ -4,17 +4,17 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from orders_app.api.permissions import IsBusinessUserOfOrder, IsCustomerUser
 from orders_app.models import Order
 from orders_app.api.serializers import OrderSerializer
 from offers_app.models import OfferDetail
-from profiles_app.models import Profile
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
     """
     View to list all orders for a user and create new orders.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCustomerUser]
     serializer_class = OrderSerializer
 
     def get_queryset(self):
@@ -45,18 +45,6 @@ class OrderListCreateView(generics.ListCreateAPIView):
                 {'detail': 'Kunde und Anbieter dürfen nicht identisch sein.'},
                 status=status.HTTP_403_FORBIDDEN
             )
-        try:
-            profile = Profile.objects.get(user=request.user)
-        except Profile.DoesNotExist:
-            return Response(
-                {'detail': 'Profile not found.'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        if getattr(profile, 'type', None) != 'customer':
-            return Response(
-                {'detail': 'Only customers can create orders.'},
-                status=status.HTTP_403_FORBIDDEN
-            )
 
         order = Order.objects.create(
             customer_user=request.user,
@@ -77,17 +65,12 @@ class OrderStatusUpdateView(generics.UpdateAPIView):
     """
     View to update the status of an existing order.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsBusinessUserOfOrder]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
     def patch(self, request, *args, **kwargs):
         order = self.get_object()
-        if request.user != order.business_user:
-            return Response(
-                {'detail': 'Only the business user can change the status.'},
-                status=status.HTTP_403_FORBIDDEN
-            )
         status_value = request.data.get('status')
         if status_value not in ['in_progress', 'completed', 'cancelled']:
             return Response(

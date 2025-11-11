@@ -58,7 +58,9 @@ class OrderPatchAPITest(APITestCase):
 
     # Test cases for patching order status
     def test_patch_order_status(self):
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + Token.objects.get(user=self.business_user).key)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + Token.objects.get(user=self.business_user).key
+        )
         url = f'/api/orders/{self.order.id}/'
         data = {
             'status': 'completed'
@@ -67,3 +69,49 @@ class OrderPatchAPITest(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.order.refresh_from_db()
         self.assertEqual(self.order.status, 'completed')
+
+    # Test cases for invalid status update
+    def test_patch_order_status_invalid_status(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + Token.objects.get(user=self.business_user).key
+        )
+        url = f'/api/orders/{self.order.id}/'
+        data = {
+            'status': 'not_a_valid_status'
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('detail', response.data)
+
+    # Test cases for unauthorized access
+    def test_patch_order_status_unauthorized(self):
+        url = f'/api/orders/{self.order.id}/'
+        data = {
+            'status': 'completed'
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+    # Test cases for forbidden access
+    def test_patch_order_status_forbidden(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + Token.objects.get(user=self.customer_user).key
+        )
+        url = f'/api/orders/{self.order.id}/'
+        data = {
+            'status': 'completed'
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+    # Test cases for non-existent order
+    def test_patch_order_status_not_found(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + Token.objects.get(user=self.business_user).key
+        )
+        url = f'/api/orders/9999/'
+        data = {
+            'status': 'completed'
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, 404)
