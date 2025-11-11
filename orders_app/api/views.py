@@ -14,7 +14,8 @@ class OrderListCreateView(generics.ListCreateAPIView):
     """
     View to list all orders for a user and create new orders.
     """
-    permission_classes = [IsAuthenticated, IsCustomerUser]
+    permission_classes = [IsAuthenticated]
+
     serializer_class = OrderSerializer
 
     def get_queryset(self):
@@ -22,6 +23,11 @@ class OrderListCreateView(generics.ListCreateAPIView):
         return Order.objects.filter(
             Q(customer_user=user) | Q(business_user=user)
         ).order_by('-created_at')
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), IsCustomerUser()]
+        return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
         offer_detail_id = request.data.get('offer_detail_id')
