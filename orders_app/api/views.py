@@ -21,27 +21,9 @@ class OrderListCreateView(generics.ListCreateAPIView):
         user = self.request.user
         return Order.objects.filter(
             Q(customer_user=user) | Q(business_user=user)
-        )
+        ).order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
-        # Check if user is a customer
-        offer_detail_id = request.data.get('offer_detail_id')
-        offer_detail = OfferDetail.objects.get(id=offer_detail_id)
-        business_user = offer_detail.offer.user
-
-    # NEU: Verhindere, dass Kunde und Anbieter identisch sind!
-        if request.user == business_user:
-            return Response(
-                {'detail': 'Kunde und Anbieter dürfen nicht identisch sein.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            profile = Profile.objects.get(user=request.user)
-        except Profile.DoesNotExist:
-            return Response({'detail': 'Profile not found.'}, status=status.HTTP_403_FORBIDDEN)
-        if getattr(profile, 'type', None) != 'customer':
-            return Response({'detail': 'Only customers can create orders.'}, status=status.HTTP_403_FORBIDDEN)
-
         offer_detail_id = request.data.get('offer_detail_id')
         if not offer_detail_id:
             return Response({'detail': 'offer_detail_id is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -52,9 +34,17 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
         business_user = offer_detail.offer.user
 
-        print("customer_user:", request.user)
-        print("business_user:", business_user)
-        print("features:", offer_detail.features)
+        if request.user == business_user:
+            return Response(
+                {'detail': 'Kunde und Anbieter dürfen nicht identisch sein.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        try:
+            profile = Profile.objects.get(user=request.user)
+        except Profile.DoesNotExist:
+            return Response({'detail': 'Profile not found.'}, status=status.HTTP_403_FORBIDDEN)
+        if getattr(profile, 'type', None) != 'customer':
+            return Response({'detail': 'Only customers can create orders.'}, status=status.HTTP_403_FORBIDDEN)
 
         order = Order.objects.create(
             customer_user=request.user,

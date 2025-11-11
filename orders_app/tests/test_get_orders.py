@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from datetime import timedelta
 
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
@@ -23,7 +24,8 @@ class OrderListAPITest(APITestCase):
         )
         Token.objects.create(user=self.user)
         Token.objects.create(user=self.user2)
-        # Create test orders
+        # Create test orders with different created_at timestamps
+        now = timezone.now()
         self.order_a1 = Order.objects.create(
             customer_user=self.user,
             business_user=self.user,
@@ -34,8 +36,8 @@ class OrderListAPITest(APITestCase):
             features=[],
             offer_type="basic",
             status="in_progress",
-            created_at=timezone.now(),
-            updated_at=timezone.now()
+            created_at=now - timedelta(minutes=2),
+            updated_at=now - timedelta(minutes=2)
         )
         self.order_a2 = Order.objects.create(
             customer_user=self.user,
@@ -47,8 +49,8 @@ class OrderListAPITest(APITestCase):
             features=[],
             offer_type="premium",
             status="completed",
-            created_at=timezone.now(),
-            updated_at=timezone.now()
+            created_at=now - timedelta(minutes=1),
+            updated_at=now - timedelta(minutes=1)
         )
         self.order_b1 = Order.objects.create(
             customer_user=self.user2,
@@ -60,8 +62,8 @@ class OrderListAPITest(APITestCase):
             features=[],
             offer_type="basic",
             status="shipped",
-            created_at=timezone.now(),
-            updated_at=timezone.now()
+            created_at=now,
+            updated_at=now
         )
 
     # Test cases for authenticated access
@@ -70,7 +72,7 @@ class OrderListAPITest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = self.client.get('/api/orders/')
         self.assertEqual(response.status_code, 200)
-        orders = response.json()
+        orders = response.data['results']
         titles = [order['title'] for order in orders]
         self.assertIn("Order A1", titles)
         self.assertIn("Order A2", titles)
@@ -90,5 +92,5 @@ class OrderListAPITest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = self.client.get('/api/orders/')
         self.assertEqual(response.status_code, 200)
-        orders = response.json()
+        orders = response.data['results']
         self.assertEqual(orders, [])
