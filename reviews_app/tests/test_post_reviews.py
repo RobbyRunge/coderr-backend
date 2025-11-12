@@ -1,8 +1,9 @@
 from django.urls import reverse
-from django.contrib.auth import get_user_model
 
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
+
+from auth_app.models import CustomUser
 
 
 class ReviewCreateTests(APITestCase):
@@ -11,9 +12,16 @@ class ReviewCreateTests(APITestCase):
     """
     def setUp(self):
         # Create users and tokens
-        User = get_user_model()
-        self.customer_user = User.objects.create_user(username="kunde", password="pass")
-        self.business_user = User.objects.create_user(username="business", password="pass")
+        self.customer_user = CustomUser.objects.create_user(
+            username="kunde",
+            password="pass",
+            user_type="customer"
+        )
+        self.business_user = CustomUser.objects.create_user(
+            username="business",
+            password="pass",
+            user_type="business"
+        )
         self.token = Token.objects.create(user=self.customer_user)
 
     # Test cases for creating reviews
