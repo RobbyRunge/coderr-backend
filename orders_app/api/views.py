@@ -133,3 +133,34 @@ class OrderCountView(generics.RetrieveAPIView):
             {'order_count': order_count},
             status=status.HTTP_200_OK
         )
+
+
+class CompletedOrderCountView(generics.RetrieveAPIView):
+    """
+    View to get the count of completed orders for the authenticated user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk, *args, **kwargs):
+        User = get_user_model()
+        try:
+            business_user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(
+                {'detail': 'No business user found with the given ID.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        profile = getattr(business_user, 'profile', None)
+        if not profile or getattr(profile, 'type', None) != 'business':
+            return Response(
+                {'detail': 'User is not a business user.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        completed_order_count = Order.objects.filter(
+            business_user=business_user,
+            status='completed'
+        ).count()
+        return Response(
+            {'completed_order_count': completed_order_count},
+            status=status.HTTP_200_OK
+        )
