@@ -10,6 +10,9 @@ from reviews_app.api.serializers import ReviewSerializer
 
 
 class ReviewListCreateAPIView(viewsets.ModelViewSet):
+    """
+    ViewSet for listing, creating, updating, and deleting reviews.
+    """
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]

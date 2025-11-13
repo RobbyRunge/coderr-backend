@@ -3,6 +3,9 @@ from reviews_app.models import Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Review model.
+    """
     reviewer = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -12,6 +15,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             'description', 'created_at', 'updated_at',
         ]
 
+    # Validation to prevent duplicate reviews
     def validate(self, data):
         request = self.context.get("request")
         reviewer = request.user

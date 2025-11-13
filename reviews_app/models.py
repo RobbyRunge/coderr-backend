@@ -4,6 +4,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Review(models.Model):
+    """
+    Model representing a review given by a customer to a business user.
+    """
     business_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name='business_reviews', on_delete=models.CASCADE
     )

@@ -30,6 +30,7 @@ class DeleteReviewTests(APITestCase):
             description="Alles war toll!"
         )
 
+    # Test cases for successful delete requests
     def test_customer_can_delete_own_review(self):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.token.key
