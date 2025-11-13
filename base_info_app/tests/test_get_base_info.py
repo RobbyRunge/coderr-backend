@@ -21,11 +21,13 @@ class BaseInfoAPITest(APITestCase):
         for _ in range(150):
             Offer.objects.create()
 
+    # Test cases for successful retrieval of base info
     def test_base_info_status_200(self):
         url = reverse('base-info')
         response = self.client.get(url)
         assert response.status_code == 200
 
+    # Test cases for correct data in base info response
     def test_base_info_fields(self):
         url = reverse('base-info')
         response = self.client.get(url)
@@ -35,6 +37,7 @@ class BaseInfoAPITest(APITestCase):
         assert 'business_profile_count' in data
         assert 'offer_count' in data
 
+    # Test cases for correct values in base info response
     def test_base_info_values(self):
         url = reverse('base-info')
         response = self.client.get(url)
