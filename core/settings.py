@@ -49,11 +49,11 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework',
     'auth_app',
-    'base_info_app',
+    'profiles_app',
     'offers_app',
     'orders_app',
-    'profiles_app',
     'reviews_app',
+    'base_info_app',
 ]
 
 MIDDLEWARE = [
