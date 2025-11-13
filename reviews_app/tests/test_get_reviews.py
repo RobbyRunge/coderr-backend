@@ -54,7 +54,7 @@ class ReviewListViewTests(APITestCase):
         url = reverse("reviews-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data["results"], list)
+        self.assertIsInstance(response.data, list)
 
     # Test cases for unauthentication
     def test_unauthenticated_user(self):
@@ -70,7 +70,7 @@ class ReviewListViewTests(APITestCase):
         url = reverse("reviews-list")
         response = self.client.get(url, {"business_user": self.business_user.id})
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(all(r["business_user"] == self.business_user.id for r in response.data["results"]))
+        self.assertTrue(all(r["business_user"] == self.business_user.id for r in response.data))
 
     # Test cases for filtering by reviewer user
     def test_filter_by_reviewer_id(self):
@@ -80,7 +80,8 @@ class ReviewListViewTests(APITestCase):
         url = reverse("reviews-list")
         response = self.client.get(url, {"reviewer": self.user.id})
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(all(r["reviewer"] == self.user.id for r in response.data["results"]))
+        # Arbeite direkt mit der Liste
+        self.assertTrue(all(r["reviewer"] == self.user.id for r in response.data))
 
     # Test cases for ordering by updated_at
     def test_ordering_by_updated_at(self):
@@ -90,7 +91,8 @@ class ReviewListViewTests(APITestCase):
         url = reverse("reviews-list")
         response = self.client.get(url, {"ordering": "updated_at"})
         self.assertEqual(response.status_code, 200)
-        updated_ats = [r["updated_at"] for r in response.data["results"]]
+        # Arbeite direkt mit der Liste
+        updated_ats = [r["updated_at"] for r in response.data]
         self.assertEqual(updated_ats, sorted(updated_ats))
 
     # Test cases for ordering by rating
@@ -101,5 +103,6 @@ class ReviewListViewTests(APITestCase):
         url = reverse("reviews-list")
         response = self.client.get(url, {"ordering": "rating"})
         self.assertEqual(response.status_code, 200)
-        ratings = [r["rating"] for r in response.data["results"]]
+        # Arbeite direkt mit der Liste
+        ratings = [r["rating"] for r in response.data]
         self.assertEqual(ratings, sorted(ratings))
