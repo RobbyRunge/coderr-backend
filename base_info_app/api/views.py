@@ -4,10 +4,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
-from base_info_app.models import Review, BusinessProfile, Offer
+from reviews_app.models import Review
+from profiles_app.models import Profile as BusinessProfile
+from offers_app.models import Offer
 
 
 class BaseInfoAPIView(APIView):
+    """
+    Provides base information about reviews, business profiles, and offers.
+    """
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -16,7 +21,7 @@ class BaseInfoAPIView(APIView):
             round(Review.objects.aggregate(avg=models.Avg('rating'))['avg'] or 0, 1)
             if review_count > 0 else 0
         )
-        business_profile_count = BusinessProfile.objects.count()
+        business_profile_count = BusinessProfile.objects.filter(type='business').count()
         offer_count = Offer.objects.count()
         return Response({
             "review_count": review_count,

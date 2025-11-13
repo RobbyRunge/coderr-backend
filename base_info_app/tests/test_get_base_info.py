@@ -6,6 +6,9 @@ from base_info_app.models import Review, BusinessProfile, Offer
 
 
 class BaseInfoAPITest(APITestCase):
+    """
+    Tests for the BaseInfo API endpoint.
+    """
     def setUp(self):
         # 10 Reviews with various ratings
         ratings = [4.5, 5.0, 4.0, 4.7, 4.6, 4.8, 4.9, 4.3, 4.4, 4.6]
