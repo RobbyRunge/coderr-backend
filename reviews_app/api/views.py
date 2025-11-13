@@ -4,7 +4,7 @@ from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from reviews_app.api.permissions import IsCustomerUser
+from reviews_app.api.permissions import IsCustomerUser, IsReviewOwner
 from reviews_app.models import Review
 from reviews_app.api.serializers import ReviewSerializer
 
@@ -19,6 +19,8 @@ class ReviewListCreateAPIView(viewsets.ModelViewSet):
     ordering_fields = ['updated_at', 'rating']
 
     def get_permissions(self):
+        if self.action in ["update", "partial_update", "destroy"]:
+            return [IsReviewOwner()]
         if self.action == "create":
             return [IsCustomerUser()]
         return [IsAuthenticated()]
