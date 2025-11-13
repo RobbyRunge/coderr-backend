@@ -1,3 +1,13 @@
 from django.db import models
 
-# Create your models here.
+
+class Review(models.Model):
+    rating = models.FloatField()
+
+
+class BusinessProfile(models.Model):
+    pass
+
+
+class Offer(models.Model):
+    pass
