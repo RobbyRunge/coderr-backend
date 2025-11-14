@@ -2,52 +2,21 @@
 
 A Django REST Framework backend for a freelance marketplace platform connecting business users with customers. This API provides comprehensive functionality for user authentication, profile management, service offers, order processing, and review systems.
 
-## 🚀 Features
+## 📑 Table of Contents
 
-- **User Authentication & Authorization**
-  - Token-based authentication
-  - Custom user model with customer/business user types
-  - Registration and login endpoints
-
-- **Profile Management**
-  - Separate profiles for business and customer users
-  - Profile creation, retrieval, and updates
-  - File upload support for profile images
-
-- **Offers System**
-  - Create, read, update, and delete service offers
-  - Multiple offer details with different pricing tiers (basic, standard, premium)
-  - Image upload for offers
-  - Filtering, searching, and ordering capabilities
-  - Dynamic pagination
-
-- **Orders Management**
-  - Order creation from offer details
-  - Order status tracking (in_progress, completed, cancelled)
-  - Order history for customers and business users
-  - Order count statistics
-
-- **Reviews & Ratings**
-  - Customer reviews for business users
-  - 1-5 star rating system
-  - Review filtering by business user or reviewer
-  - Update and delete review functionality
-
-- **Platform Statistics**
-  - Base information endpoint with platform-wide metrics
-  - Review count and average ratings
-  - Business profile and offer counts
-
-## 🛠️ Technology Stack
-
-- **Framework:** Django 5.2.7
-- **API:** Django REST Framework 3.16.1
-- **Authentication:** Token-based authentication
-- **Database:** SQLite (development)
-- **Image Processing:** Pillow 12.0.0
-- **Filtering:** django-filter 25.2
-- **CORS:** django-cors-headers 4.9.0
-- **Environment Management:** python-dotenv 1.2.1
+- [Prerequisites](#-prerequisites)
+- [Installation](#️-installation)
+- [Features](#-features)
+- [Technology Stack](#️-technology-stack)
+- [Project Structure](#-project-structure)
+- [API Endpoints](#-api-endpoints)
+- [Testing](#-testing)
+- [Authentication](#-authentication)
+- [Models](#-models)
+- [Development](#-development)
+- [License](#-license)
+- [Contributing](#-contributing)
+- [Support](#-support)
 
 ## 📋 Prerequisites
 
@@ -102,6 +71,49 @@ A Django REST Framework backend for a freelance marketplace platform connecting 
    ```
 
 The API will be available at `http://localhost:8000/`
+
+## 🚀 Features
+
+- **User Authentication & Authorization**
+  - Token-based authentication
+  - Custom user model with customer/business user types
+  - Registration and login endpoints
+
+- **Profile Management**
+  - Separate profiles for business and customer users
+  - Profile creation, retrieval, and updates
+  - File upload support for profile images
+
+- **Offers System**
+  - Create, read, update, and delete service offers
+  - Multiple offer details with different pricing tiers (basic, standard, premium)
+  - Image upload for offers
+  - Filtering, searching, and ordering capabilities
+  - Dynamic pagination
+
+- **Orders Management**
+  - Order creation from offer details
+  - Order status tracking (in_progress, completed, cancelled)
+  - Order history for customers and business users
+  - Order count statistics
+
+- **Reviews & Ratings**
+  - Customer reviews for business users
+  - 1-5 star rating system
+  - Review filtering by business user or reviewer
+  - Update and delete review functionality
+
+- **Platform Statistics**
+  - Base information endpoint with platform-wide metrics
+  - Review count and average ratings
+  - Business profile and offer counts
+
+## 🛠️ Technology Stack
+
+- **Framework:** Django 5.2.7
+- **API:** Django REST Framework 3.16.1
+- **Authentication:** Token-based authentication
+- **Database:** SQLite (development)
 
 ## 📁 Project Structure
 
