@@ -4,6 +4,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 
+from profiles_app.models import Profile
+
 from .serializers import RegistrationSerializer, LoginSerializer
 from auth_app.models import CustomUser
 
@@ -38,6 +40,14 @@ class RegistrationView(APIView):
 
             # Create auth token
             token, created = Token.objects.get_or_create(user=user)
+
+            # Create associated profile
+            Profile.objects.create(
+                user=user,
+                username=user.username,
+                email=user.email,
+                type=serializer.validated_data['type']
+            )
 
             # Success response
             return Response({
