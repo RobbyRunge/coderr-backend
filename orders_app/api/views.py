@@ -21,6 +21,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
+    pagination_class = None
 
     def get_queryset(self):
         user = self.request.user

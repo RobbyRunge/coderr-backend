@@ -69,7 +69,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 'description': profile.description or '',
                 'working_hours': profile.working_hours or '',
                 'type': profile.type
-                if profile.created_at else None
             }
         except Profile.DoesNotExist:
             return {
