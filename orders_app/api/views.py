@@ -40,8 +40,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
                 {'detail': 'offer_detail_id is required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        # Validate that offer_detail_id is a valid integer
+
         try:
             offer_detail_id = int(offer_detail_id)
         except (ValueError, TypeError):
@@ -49,7 +48,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
                 {'detail': 'offer_detail_id must be a valid number.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         try:
             offer_detail = OfferDetail.objects.get(id=offer_detail_id)
         except OfferDetail.DoesNotExist:
