@@ -40,6 +40,16 @@ class OrderListCreateView(generics.ListCreateAPIView):
                 {'detail': 'offer_detail_id is required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        # Validate that offer_detail_id is a valid integer
+        try:
+            offer_detail_id = int(offer_detail_id)
+        except (ValueError, TypeError):
+            return Response(
+                {'detail': 'offer_detail_id must be a valid number.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         try:
             offer_detail = OfferDetail.objects.get(id=offer_detail_id)
         except OfferDetail.DoesNotExist:
@@ -52,7 +62,10 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
         if request.user == business_user:
             return Response(
-                {'detail': 'Kunde und Anbieter dürfen nicht identisch sein.'},
+                {
+                    'detail': 'Customers cannot create orders for '
+                    'their own offers.'
+                },
                 status=status.HTTP_403_FORBIDDEN
             )
 
