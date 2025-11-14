@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 
 from profiles_app.models import Profile
 
@@ -39,3 +40,47 @@ class ProfileSerializer(serializers.ModelSerializer):
             if field in attrs and attrs[field] is None:
                 attrs[field] = ""
         return attrs
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User with Profile data.
+    Returns all users (with or without profile).
+    """
+
+    class Meta:
+        model = get_user_model()
+        fields = ['id']
+
+    def to_representation(self, obj):
+        """
+        Return profile data if it exists, otherwise return default values.
+        """
+        try:
+            profile = obj.profile
+            return {
+                'user': profile.user.id,
+                'username': profile.username,
+                'first_name': profile.first_name or '',
+                'last_name': profile.last_name or '',
+                'file': profile.file.url if profile.file else None,
+                'location': profile.location or '',
+                'tel': profile.tel or '',
+                'description': profile.description or '',
+                'working_hours': profile.working_hours or '',
+                'type': profile.type
+                if profile.created_at else None
+            }
+        except Profile.DoesNotExist:
+            return {
+                'user': obj.id,
+                'username': obj.username,
+                'first_name': '',
+                'last_name': '',
+                'file': None,
+                'location': '',
+                'tel': '',
+                'description': '',
+                'working_hours': '',
+                'type': obj.user_type
+            }
