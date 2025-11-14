@@ -1,8 +1,10 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from profiles_app.models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer, UserProfileSerializer
 
 
 class ProfileDetailView(RetrieveUpdateAPIView):
@@ -31,16 +33,24 @@ class ProfileDetailView(RetrieveUpdateAPIView):
 class BusinessProfileListView(ListAPIView):
     """
     View to retrieve business profiles.
+    Returns all users with user_type='business' (with or without profile).
     """
-    queryset = Profile.objects.filter(type="business").order_by('id')
-    serializer_class = ProfileSerializer
+    serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        User = get_user_model()
+        return User.objects.filter(user_type='business').order_by('id')
 
 
 class CustomerProfileListView(ListAPIView):
     """
     View to retrieve customer profiles.
+    Returns all users with user_type='customer' (with or without profile).
     """
-    queryset = Profile.objects.filter(type="customer").order_by('id')
-    serializer_class = ProfileSerializer
+    serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        User = get_user_model()
+        return User.objects.filter(user_type='customer').order_by('id')

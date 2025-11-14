@@ -40,6 +40,15 @@ class OrderListCreateView(generics.ListCreateAPIView):
                 {'detail': 'offer_detail_id is required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        try:
+            offer_detail_id = int(offer_detail_id)
+        except (ValueError, TypeError):
+            return Response(
+                {'detail': 'offer_detail_id must be a valid number.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             offer_detail = OfferDetail.objects.get(id=offer_detail_id)
         except OfferDetail.DoesNotExist:
@@ -52,7 +61,10 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
         if request.user == business_user:
             return Response(
-                {'detail': 'Kunde und Anbieter dürfen nicht identisch sein.'},
+                {
+                    'detail': 'Customers cannot create orders for '
+                    'their own offers.'
+                },
                 status=status.HTTP_403_FORBIDDEN
             )
 
@@ -122,8 +134,8 @@ class OrderCountView(generics.RetrieveAPIView):
         profile = getattr(business_user, 'profile', None)
         if not profile or getattr(profile, 'type', None) != 'business':
             return Response(
-                {'detail': 'User is not a business user.'},
-                status=status.HTTP_404_NOT_FOUND
+                {'order_count': 0},
+                status=status.HTTP_200_OK
             )
         order_count = Order.objects.filter(
             business_user=business_user,
@@ -153,8 +165,8 @@ class CompletedOrderCountView(generics.RetrieveAPIView):
         profile = getattr(business_user, 'profile', None)
         if not profile or getattr(profile, 'type', None) != 'business':
             return Response(
-                {'detail': 'User is not a business user.'},
-                status=status.HTTP_404_NOT_FOUND
+                {'completed_order_count': 0},
+                status=status.HTTP_200_OK
             )
         completed_order_count = Order.objects.filter(
             business_user=business_user,
