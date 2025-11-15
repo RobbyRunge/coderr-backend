@@ -18,6 +18,7 @@ from offers_app.api.serializers import (
     OfferRetrieveSerializer,
     OfferUpdateSerializer
 )
+from offers_app.api.paginations import DynamicPageSizePagination
 
 
 class OfferListView(ListCreateAPIView):
@@ -27,6 +28,7 @@ class OfferListView(ListCreateAPIView):
     queryset = Offer.objects.all()
     serializer_class = OfferListSerializer
     permission_classes = [AllowAny, IsBusinessUser]
+    pagination_class = DynamicPageSizePagination
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
