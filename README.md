@@ -55,6 +55,20 @@ A Django REST Framework backend for a freelance marketplace platform connecting 
    ALLOWED_HOSTS=localhost,127.0.0.1
    ```
 
+   **Generate a SECRET_KEY:**
+   
+   You can generate a secure SECRET_KEY using Python:
+   ```bash
+   python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+   ```
+   
+   Or use this one-liner in PowerShell:
+   ```powershell
+   python -c "import secrets; print(secrets.token_urlsafe(50))"
+   ```
+   
+   Copy the generated key and paste it into your `.env` file.
+
 5. **Run migrations:**
    ```bash
    python manage.py migrate
