@@ -9,7 +9,8 @@ class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='profile'
+        related_name='profile',
+        primary_key=True
     )
     username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
