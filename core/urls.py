@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,7 +29,7 @@ urlpatterns = [
     path('api/', include('orders_app.api.urls')),
     path('api/', include('profiles_app.api.urls')),
     path('api/', include('reviews_app.api.urls')),
-]
+] + staticfiles_urlpatterns()
 
 # Serve media files in development
 if settings.DEBUG:
