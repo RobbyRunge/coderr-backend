@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Min
 
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -38,7 +39,7 @@ class OfferListView(ListCreateAPIView):
     ordering_fields = [
         'id', 'price',
         'delivery_time', 'created_at',
-        'updated_at']
+        'updated_at', 'min_price']
 
     # Determine the serializer class based on the request method
     def get_serializer_class(self):
@@ -49,8 +50,15 @@ class OfferListView(ListCreateAPIView):
     # Apply filtering based on query parameters
     def get_queryset(self):
         queryset = super().get_queryset()
+
+        # Annotate queryset with min_price and min_delivery_time
+        queryset = queryset.annotate(
+            min_price=Min('details__price'),
+            min_delivery_time=Min('details__delivery_time_in_days')
+        )
+
         creator_id = self.request.query_params.get('creator_id')
-        min_price = self.request.query_params.get('min_price')
+        min_price_filter = self.request.query_params.get('min_price')
         max_delivery_time = self.request.query_params.get('max_delivery_time')
 
         if creator_id:
@@ -59,12 +67,13 @@ class OfferListView(ListCreateAPIView):
             except (TypeError, ValueError):
                 raise ValidationError({'creator_id': 'Must be an integer.'})
             queryset = queryset.filter(user_id=creator_id)
-        if min_price:
+        if min_price_filter:
             try:
-                min_price = float(min_price)
+                min_price_filter = float(min_price_filter)
             except (TypeError, ValueError):
                 raise ValidationError({'min_price': 'Must be a number.'})
-            queryset = queryset.filter(details__price__gte=min_price)
+            # Filter by annotated min_price instead of individual details
+            queryset = queryset.filter(min_price__gte=min_price_filter)
         if max_delivery_time:
             try:
                 max_delivery_time = int(max_delivery_time)
@@ -72,10 +81,11 @@ class OfferListView(ListCreateAPIView):
                 raise ValidationError(
                     {'max_delivery_time': 'Must be an integer.'}
                 )
+            # Filter by annotated min_delivery_time
             queryset = queryset.filter(
-                details__delivery_time_in_days__lte=max_delivery_time
+                min_delivery_time__lte=max_delivery_time
             )
-        return queryset.distinct()
+        return queryset
 
 
 class OfferDetailView(RetrieveUpdateDestroyAPIView):

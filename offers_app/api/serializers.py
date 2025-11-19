@@ -148,6 +148,13 @@ class OfferCreateSerializer(serializers.ModelSerializer):
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
 
+    # Return the created offer with the list representation
+    def to_representation(self, instance):
+        return OfferListSerializer(
+            instance,
+            context=self.context
+        ).data
+
 
 class OfferUpdateSerializer(serializers.ModelSerializer):
     details = OfferDetailFullSerializer(many=True, required=False)
@@ -191,5 +198,8 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['details'] = OfferDetailFullSerializer(instance.details.all(), many=True).data
+        data['details'] = OfferDetailFullSerializer(
+            instance.details.all(),
+            many=True
+        ).data
         return data
