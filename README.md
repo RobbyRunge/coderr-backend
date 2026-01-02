@@ -2,6 +2,10 @@
 
 A Django REST Framework backend for a freelance marketplace platform connecting business users with customers. This API provides comprehensive functionality for user authentication, profile management, service offers, order processing, and review systems.
 
+## Coderr Frontend
+ 
+You can find the corresponding frontend here: [https://github.com/RobbyRunge/coderr-frontend](https://github.com/RobbyRunge/coderr-frontend)
+
 ## 📑 Table of Contents
 
 - [Prerequisites](#-prerequisites)
