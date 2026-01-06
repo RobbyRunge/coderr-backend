@@ -1,0 +1,9 @@
+services:
+
+    web:
+        entrypoint: [ "/app/backend.entrypoint.dev.sh" ]
+        volumes:
+            - .:/app
+            - coderr_media:/app/media
+            - coderr_static:/app/static
+        ports: -"8000:8000"

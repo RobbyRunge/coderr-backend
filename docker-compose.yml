@@ -1,0 +1,33 @@
+services:
+    db:
+        image: postgres:latest
+        container_name: coderr_database
+        environment:
+            POSTGRES_DB: ${DB_NAME}
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - postgres_data:/var/lib/postgresql
+
+    web:
+        build:
+            context: .
+            dockerfile: backend.Dockerfile
+        image: coderr_backend:latest
+        env_file: .env
+        container_name: coderr_backend
+        volumes:
+            - .:/app
+            - coderr_media:/app/media
+            - coderr_static:/app/static
+        ports:
+            - "8000:8000"
+        environment:
+            - PYTHONUNBUFFERED=1
+        depends_on:
+            - db
+
+volumes:
+    postgres_data:
+    coderr_media:
+    coderr_static:
