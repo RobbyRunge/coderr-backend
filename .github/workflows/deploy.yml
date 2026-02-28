@@ -30,6 +30,9 @@ jobs:
             echo "==> Building Docker images..."
             docker compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
 
+            echo "==> Setting permissions..."
+            chmod +x backend.entrypoint.sh backend.entrypoint.dev.sh backend.entrypoint.prod.sh
+
             echo "==> Restarting containers..."
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
 
