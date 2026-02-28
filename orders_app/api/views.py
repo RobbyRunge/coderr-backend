@@ -21,7 +21,6 @@ class OrderListCreateView(generics.ListCreateAPIView):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
-    pagination_class = None
 
     def get_queryset(self):
         user = self.request.user
@@ -135,8 +134,8 @@ class OrderCountView(generics.RetrieveAPIView):
         profile = getattr(business_user, 'profile', None)
         if not profile or getattr(profile, 'type', None) != 'business':
             return Response(
-                {'order_count': 0},
-                status=status.HTTP_200_OK
+                {'detail': 'No business user found with the given ID.'},
+                status=status.HTTP_404_NOT_FOUND
             )
         order_count = Order.objects.filter(
             business_user=business_user,

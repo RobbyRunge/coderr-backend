@@ -22,7 +22,7 @@ class BaseInfoAPIView(APIView):
             if review_count > 0 else 0
         )
         business_profile_count = BusinessProfile.objects.filter(
-            user__user_type='business'
+            type='business'
         ).count()
         offer_count = Offer.objects.count()
         return Response({
