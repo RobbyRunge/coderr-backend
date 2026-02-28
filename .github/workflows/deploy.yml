@@ -19,6 +19,8 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
             set -e
+            echo "==> Hostname: $(hostname) | IP: $(hostname -I)"
+            ls /srv
             cd /srv/coderr
 
             echo "==> Pulling latest code..."
