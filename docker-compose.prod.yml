@@ -16,7 +16,7 @@ services:
         entrypoint: [ "/app/backend.entrypoint.prod.sh" ]
         volumes:
             - /srv/coderr/media:/app/media
-            - /srv/coderr/static:/app/static
+            - /srv/coderr/static:/app/staticfiles
         restart: always
         logging:
             options:
