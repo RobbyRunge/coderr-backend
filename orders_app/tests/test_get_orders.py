@@ -72,7 +72,7 @@ class OrderListAPITest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = self.client.get('/api/orders/')
         self.assertEqual(response.status_code, 200)
-        orders = response.data['results']
+        orders = response.data
         titles = [order['title'] for order in orders]
         self.assertIn("Order A1", titles)
         self.assertIn("Order A2", titles)
@@ -92,5 +92,5 @@ class OrderListAPITest(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         response = self.client.get('/api/orders/')
         self.assertEqual(response.status_code, 200)
-        orders = response.data['results']
+        orders = response.data
         self.assertEqual(orders, [])
